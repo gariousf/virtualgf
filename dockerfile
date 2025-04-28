@@ -8,28 +8,24 @@ FROM node:18-alpine AS builder
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and lock file (if you have one, e.g., package-lock.json or yarn.lock)
+# Copy package.json and package-lock.json
 # Copying these first leverages Docker layer caching
 COPY package.json ./
-# If you use npm:
 COPY package-lock.json* ./
-# If you use yarn:
+# Make sure yarn.lock and bun.lock.json are commented out if present
 # COPY yarn.lock ./
-# If you use bun:
 # COPY bun.lock.json ./
 
-# Install dependencies
-# If you use npm:
+# Install dependencies using npm
 RUN npm install
-# If you use yarn:
+# Make sure other install commands are commented out
 # RUN yarn install
-# If you use bun:
 # RUN bun install
 
 # Copy the rest of your application code
 COPY . .
 
-# Build the application
+# Build the application using npm script
 RUN npm run build
 
 # --- Production Stage ---
@@ -40,12 +36,14 @@ WORKDIR /app
 
 # Copy only necessary files from the builder stage
 COPY --from=builder /app/package.json ./
+# Copy package-lock.json as well, it might be needed by some tools or for consistency
+COPY --from=builder /app/package-lock.json* ./
 COPY --from=builder /app/node_modules ./
 COPY --from=builder /app/dist ./dist
 
 # Expose the port the app runs on (vite preview defaults to 4173)
 EXPOSE 4173
 
-# Command to run the application using the start script
+# Command to run the application using the npm start script
 # This uses the "start": "vite preview --host" script from your package.json
 CMD ["npm", "run", "start"]

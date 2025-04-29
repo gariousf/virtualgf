@@ -42,7 +42,7 @@ COPY --from=builder /app/vite.config.js ./
 
 # Install *only* production dependencies using npm
 # This will install 'serve' and 'vite' (needed for build stage, kept for simplicity)
-# RUN npm install --omit=dev --ignore-scripts
+RUN npm install --omit=dev --ignore-scripts
 
 # Copy the built application files from the builder stage
 COPY --from=builder /app/dist ./dist

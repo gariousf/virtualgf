@@ -5,7 +5,12 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true // Allow access from network
+    host: true, // Allow access from network
+    allowedHosts: [
+      'virtualgf-tpr2.onrender.com',
+      // Add any other allowed hosts here, e.g., localhost for local testing
+      'localhost'
+    ],
   },
   preview: {
     host: true, // Allow access from network

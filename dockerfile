@@ -34,18 +34,20 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package.json and package-lock.json first
+# Copy configuration and package files first
 COPY package.json ./
 COPY package-lock.json* ./
+# No need to copy vite.config.js for serve
+COPY --from=builder /app/vite.config.js ./
 
 # Install *only* production dependencies using npm
-# --omit=dev ensures devDependencies are skipped
-RUN npm install --omit=dev --ignore-scripts
+# This will install 'serve' and 'vite' (needed for build stage, kept for simplicity)
+# RUN npm install --omit=dev --ignore-scripts
 
 # Copy the built application files from the builder stage
 COPY --from=builder /app/dist ./dist
 
-# Expose the port the app runs on (vite preview defaults to 4173)
+# Expose the port the app runs on (serve will listen on 4173 as per start script)
 EXPOSE 4173
 
 # Command to run the application using npx to execute vite preview directly

@@ -44,6 +44,5 @@ COPY --from=builder /app/dist ./dist
 # Expose the port the app runs on (vite preview defaults to 4173)
 EXPOSE 4173
 
-# Command to run the application using the npm start script
-# This uses the "start": "vite preview --host" script from your package.json
-CMD ["npm", "run", "start"]
+# Command to run the application using npx to execute vite preview directly
+CMD ["npx", "vite", "preview", "--host"]

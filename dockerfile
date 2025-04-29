@@ -34,11 +34,15 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy only necessary files from the builder stage
-COPY --from=builder /app/package.json ./
-# Copy package-lock.json as well, it might be needed by some tools or for consistency
-COPY --from=builder /app/package-lock.json* ./
-COPY --from=builder /app/node_modules ./
+# Copy package.json and package-lock.json first
+COPY package.json ./
+COPY package-lock.json* ./
+
+# Install *only* production dependencies using npm
+# --omit=dev ensures devDependencies are skipped
+RUN npm install --omit=dev --ignore-scripts
+
+# Copy the built application files from the builder stage
 COPY --from=builder /app/dist ./dist
 
 # Expose the port the app runs on (vite preview defaults to 4173)
